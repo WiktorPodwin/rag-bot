@@ -1,0 +1,23 @@
+# Ignore Python cache & compiled files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Ignore local database storage (ChromaDB stores data here)
+my_db/
+
+# Ignore environment variables & secrets
+.env
+chromadb.env
+
+# Ignore Docker-related files
+Dockerfile
+docker-compose.yaml
+
+# Ignore system files & editor configs
+.vscode/
+.idea/
+*.log
+.DS_Store
+Thumbs.db
