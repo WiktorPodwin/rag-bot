@@ -1,0 +1,8 @@
+chromadb>=0.6.3
+huggingface-hub>=0.28.1
+langchain>=0.3.17
+langchain-community>=0.3.16
+pypdf>=5.2.0
+sentence-transformers>=3.4.1
+torch>=2.6.0
+transformers>=4.48.1

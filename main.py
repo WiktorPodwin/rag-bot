@@ -1,66 +1,28 @@
 import time
 
-from typing import List
-from transformers import AutoModelForCausalLM, AutoTokenizer
-from sentence_transformers import SentenceTransformer
-
-from src.operations import ChromaDBOperations, list_files
+from src.pipelines import embed_pdfs_to_chromadb, retrieve_and_combine_chunks, get_response
 from src.config import BaseConfig as config
 
 
 if __name__ == "__main__":
     start = time.time()
 
+    embed_pdfs_to_chromadb(config.EMBEDDER_DIR, config.PDF_DIR)
 
-    chroma_oper = ChromaDBOperations(config.TRANSFORMER_DIR)
+    query = "Who becomes a banker?"
+    context = retrieve_and_combine_chunks(
+        embedding_model_dir=config.EMBEDDER_DIR, query=query, top_k=2
+    )
 
-    pdfs = list_files(config.PDF_DIR, full_path=True)
-    
-    all_chunk_ids = []
-    for pdf in pdfs:
-        chunks_ids = chroma_oper.add_document(pdf_path=pdf, return_ids=True)
-        all_chunk_ids.extend(chunks_ids)
-    
-    chroma_oper.remove_chunks(ids_to_keep=all_chunk_ids)
-
-    query = "When Monopoly has been invented?"
-    results = chroma_oper.retrive_chunk(query, 3)
-    results = ("\n\n".join([result.replace("\n", " ") for result in results]))
-    print(results)
-
-    
-
-
-
-
-
-    # context = "\n".join(retrieved_docs)
-    # input_text = f"""You are a helpful AI assistant. Answer the question strictly based on the provided context.
-    # If the answer is not in the context, say "I don't know."
-
-    # Context:
-    # {context}
-
-    # Question:
-    # {query}
-
-    # Answer:
-    # """
-
-    # transformer = AutoModelForCausalLM.from_pretrained(transformer_dir)
-
-    # tokenizer = AutoTokenizer.from_pretrained(transformer_dir)
-
-    # input_ids = tokenizer(input_text, return_tensors="pt")
-
-    # outputs = transformer.generate(
-    #     **input_ids,
-    #     max_new_tokens=100,
-    #     temperature=0.3,
-    #     top_p=0.9,
-    #     do_sample=True,
-    #     repetition_penalty=1.2
-    # )
-    # print(tokenizer.decode(outputs[0], skip_special_tokens=True))
-
+    response = get_response(query=query, 
+                            context=context, 
+                            transformer_dir=config.TRANSFORMER_DIR,
+                            temperature=0.1,
+                            do_sample=True,
+                            max_new_tokens=70,
+                            repetition_penalty=1.2,
+                            top_p=0.9,
+                            top_k=30
+                            )
+    print(response)
     print("\nComputing time:", time.time() - start)

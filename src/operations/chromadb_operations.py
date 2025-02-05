@@ -13,7 +13,6 @@ class ChromaDBOperations:
 
     def __init__(
         self,
-        embedding_model_dir: str,
         host: str = "localhost",
         port: int = 8800,
         collection: str = "documents",
@@ -22,13 +21,11 @@ class ChromaDBOperations:
         Initiate parameters
 
         Args:
-            embedding_model_dir (str): Path to the directory storing embedding model
             host (str): Type of host
             port (int): Port number
             collection (str): Name of the collection to store documents inside ChromaDB
         """
         self.collection_name = collection
-        self.embedder = SentenceTransformer(embedding_model_dir)
         self.chroma_client = chromadb.HttpClient(host=host, port=port)
         self.collection = self.chroma_client.get_or_create_collection(name=collection)
 
@@ -98,16 +95,21 @@ class ChromaDBOperations:
             chunks.extend((text_splitter.split_text(doc.page_content)))
         return chunks
 
-    def add_document(self, pdf_path: str, return_ids: bool = False) -> List[str] | None:
+    def add_document(
+        self, embedding_model_dir: str, pdf_path: str, return_ids: bool = False
+    ) -> List[str] | None:
         """
         Add a document to ChromaDB after opening the PDF file, spliting text into chunks and creating embeddings.
 
         Args:
+            embedding_model_dir (str): Path to the directory storing embedding model.
             pdf_path (str): The PDF containing text to be splitted into chunks.
+            return ids (bool): If the function should return applied chunks ID.
 
         Returns:
             List[str] | None: List of chunks id if return_ids is set to True, else None
         """
+        embedder = SentenceTransformer(embedding_model_dir)
         chunks = self._split_into_chunks(pdf_path)
 
         new_ids = []
@@ -118,7 +120,7 @@ class ChromaDBOperations:
 
             existing = self.collection.get(ids=[doc_id])
             if not existing["metadatas"]:
-                embedding = self.embedder.encode(chunk).tolist()
+                embedding = embedder.encode(chunk).tolist()
                 self.collection.add(
                     ids=[doc_id], embeddings=[embedding], metadatas=[{"text": chunk}]
                 )
@@ -126,18 +128,22 @@ class ChromaDBOperations:
         if return_ids:
             return new_ids
 
-    def retrive_chunk(self, query: str, top_k: int = 1) -> List[str | None]:
+    def retrieve_chunk(
+        self, embedding_model_dir: str, query: str, top_k: int = 1
+    ) -> List[str | None]:
         """
         Retrieves the top-k most relevant chunks from ChromaDB based on the query.
 
         Args:
+            embedding_model_dir (str): Path to the directory storing embedding model.
             query (str): The query to be used for retrieving relevant chunks.
             top_k (int): The number of top chunks to retrieve
 
         Returns:
             List[str | None]: A list of strings representing the top-k relevant chunks of text.
         """
-        query_embedding = self.embedder.encode(query).tolist()
+        embedder = SentenceTransformer(embedding_model_dir)
+        query_embedding = embedder.encode(query).tolist()
         results = self.collection.query(
             query_embeddings=[query_embedding], n_results=top_k
         )
