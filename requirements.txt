@@ -6,3 +6,6 @@ pypdf>=5.2.0
 sentence-transformers>=3.4.1
 torch>=2.6.0
 transformers>=4.48.1
+langchain-experimental>=0.3.4
+scikit-learn>=1.6.1
+matplotlib>=3.10.0

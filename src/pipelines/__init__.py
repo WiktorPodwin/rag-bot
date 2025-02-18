@@ -1,2 +1,3 @@
 from .embedding_process import embed_pdfs_to_chromadb, retrieve_and_combine_chunks
 from .response_generating import get_response
+from .chunking import recursive_semantic_chunking
