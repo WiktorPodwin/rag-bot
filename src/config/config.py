@@ -3,7 +3,7 @@ import logging
 
 from attrs import define
 
-# logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.INFO)
 
 
 @define

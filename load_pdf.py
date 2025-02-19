@@ -1,0 +1,12 @@
+import time
+
+from src.pipelines import handle_pdf
+from src.config import BaseConfig as config
+
+
+if __name__ == "__main__":
+    start = time.time()
+
+    handle_pdf("data/pdfs/rules.pdf", config.EMBEDDER_DIR)
+
+    print("\nComputing time:", time.time() - start)

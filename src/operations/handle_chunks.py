@@ -1,10 +1,11 @@
 from re import Pattern
+from typing import List, Tuple
 
+from src.utils import extract_chunks, sentence_embedding
 from src.operations.chunk_operations import (
     PrepareForSemanticChunking,
     ReduceChunkSize,
     EnhanceChunkSize,
-    extract_chunks,
     visualize_chunks,
 )
 
@@ -17,17 +18,17 @@ def recursive_semantic_chunking(
     percentage: int = 98,
     max_size: int = 1000,
     min_size: int = 300,
-):
+) -> Tuple[List[str], List[List[float]]]:
     """
     Performs recursive semantic chunking on a PDF document.
 
-    This function process a PDF file by:
+    This function processes a PDF file by:
     1. Splitting the text into sentences.
     2. Connecting sentences with overlapping content.
     3. Applying embeddings to combined sentences.
-    4. Calculating cosine diistances between wentence embeddings.
+    4. Calculating cosine distances between wentence embeddings.
     5. Creating chunks by splitting at high cosine distance points.
-    6. Reducing chunk sizes by splitting in local minima.
+    6. Reducing chunk sizes by splitting at local minima.
     7. Enhancing chunk sizes by merging smaller chunks.
     8. Extracting the final chunk context.
 
@@ -36,12 +37,13 @@ def recursive_semantic_chunking(
         embedder_dir (str): The directory path where the embedding model is located.
         pattern (Pattern[str]): A regex pattern to split sentences.
         overlap (int): The number of overlapping sentences to consider.
-        percentage (int): The percentile to calculate.
-        max_size (int): The maximum size for a chunk.
-        min_size (int): The minimum size for a chunk.
+        percentage (int): The percentile used for chunk size reduction.
+        max_size (int): The maximum allowable size for a chunk.
+        min_size (int): The minimum allowable size for a chunk.
 
     Returns:
-        List[str]: A list of extracted text chunks.
+        Tuple[List[str], List[List[float]]]: A list of extracted text chunks and
+            a list of their cooresponding embeddings.
     """
     prepare_for_chunking = PrepareForSemanticChunking(
         pdf_path=pdf_path, embedder_dir=embedder_dir
@@ -65,5 +67,8 @@ def recursive_semantic_chunking(
     )
 
     extracted_chunks = extract_chunks(combined_sentences=combined_sentences)
+    embeddings = sentence_embedding(
+        sentences=extracted_chunks, embedder_dir=embedder_dir
+    )
 
-    return extracted_chunks
+    return extracted_chunks, embeddings

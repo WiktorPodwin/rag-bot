@@ -1,20 +1,15 @@
 import time
 
-from src.pipelines import recursive_semantic_chunking
-
-# from src.pipelines import embed_pdfs_to_chromadb, retrieve_and_combine_chunks, get_response
 from src.config import BaseConfig as config
+from src.pipelines import retrieve_relevant_chunks
 
 
 if __name__ == "__main__":
     start = time.time()
 
-    chunks = recursive_semantic_chunking("data/pdfs/history.pdf", config.EMBEDDER_DIR)
-
-    # query = "Who becomes a banker?"
-    # context = retrieve_and_combine_chunks(
-    #     embedding_model_dir=config.EMBEDDER_DIR, query=query, top_k=2
-    # )
+    query = "Did Lizzy earn some money from the Monopoly?"
+    chunks = retrieve_relevant_chunks(config.EMBEDDER_DIR, query=query, top_k=3)
+    print(chunks)
 
     # response = get_response(query=query,
     #                         context=context,
@@ -27,4 +22,5 @@ if __name__ == "__main__":
     #                         top_k=30
     #                         )
     # print(response)
-    print("\nComputing time:", time.time() - start)
+
+    print("\n\nComputing time: ", time.time() - start)

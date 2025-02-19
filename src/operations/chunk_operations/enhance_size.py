@@ -1,5 +1,5 @@
 from src.datatypes import CombinedSentences, Chunk
-from src.operations.chunk_operations.utils import reset_chunk_index
+from src.utils import reset_chunk_index
 
 from typing import List, Tuple
 
