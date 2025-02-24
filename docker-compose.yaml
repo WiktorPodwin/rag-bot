@@ -10,5 +10,26 @@ services:
     env_file:
       - ./chromadb.env
     volumes:
-      - ./chroma_db:/chroma/my_db
+      - chroma_db:/chroma/my_db
     restart: unless-stopped
+
+  postgresql:
+    build:
+      context: .
+      dockerfile: Dockerfile.pg
+    container_name: pg-ragbot
+    env_file:
+      - .env
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER?Variable not set}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD?Variable not set}
+      - POSTGRES_DB=${POSTGRES_DB?Variable not set}
+    ports:
+      - ${POSTGRES_PORT}:5432
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+volumes:
+  chroma_db:
+  pg_data:

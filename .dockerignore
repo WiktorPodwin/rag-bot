@@ -4,8 +4,12 @@ __pycache__/
 *.pyo
 *.pyd
 
-# Ignore local database storage (ChromaDB stores data here)
-my_db/
+# Ignore local database storage
+chroma_db/
+data/
+
+# Ignore saved models locally
+checkpoint/
 
 # Ignore environment variables & secrets
 .env
@@ -13,6 +17,7 @@ chromadb.env
 
 # Ignore Docker-related files
 Dockerfile
+Dockerfile.pg
 docker-compose.yaml
 
 # Ignore system files & editor configs
@@ -21,3 +26,9 @@ docker-compose.yaml
 *.log
 .DS_Store
 Thumbs.db
+
+# Ignore virtual environments
+.venv/
+
+# Ignore version control
+.git/
