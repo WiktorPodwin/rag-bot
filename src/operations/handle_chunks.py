@@ -11,7 +11,7 @@ from src.operations.chunk_operations import (
 
 
 def recursive_semantic_chunking(
-    pdf_path: str,
+    pdf: str,
     embedder_dir: str,
     pattern: Pattern[str] = r"(?<=[.!?])\s+",
     overlap: int = 1,
@@ -33,7 +33,7 @@ def recursive_semantic_chunking(
     8. Extracting the final chunk context.
 
     Args:
-        pdf_path (str): The path to the PDF file.
+        pdf (str): The PDF file.
         embedder_dir (str): The directory path where the embedding model is located.
         pattern (Pattern[str]): A regex pattern to split sentences.
         overlap (int): The number of overlapping sentences to consider.
@@ -46,7 +46,7 @@ def recursive_semantic_chunking(
             a list of their cooresponding embeddings.
     """
     prepare_for_chunking = PrepareForSemanticChunking(
-        pdf_path=pdf_path, embedder_dir=embedder_dir
+        pdf=pdf, embedder_dir=embedder_dir
     )
     combined_sentences = prepare_for_chunking.prepare_for_recursive_semantic_chunking(
         pattern=pattern, overlap=overlap

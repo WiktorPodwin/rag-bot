@@ -1,24 +1,24 @@
 import re
 from re import Pattern
 
-from src.datatypes import Sentence, CombinedSentences
+from src.models import Sentence, CombinedSentences
 
 from typing import List
 from sentence_transformers import SentenceTransformer
 from sklearn.metrics.pairwise import cosine_distances
-from langchain_community.document_loaders import PyPDFLoader
+import PyPDF2
 
 
 class PrepareForSemanticChunking:
     """Class to prepare the PDF file before semantic chunking"""
 
-    def __init__(self, pdf_path: str, embedder_dir: str) -> None:
+    def __init__(self, pdf: str, embedder_dir: str) -> None:
         """
         Args:
-            pdf_path (str): The path to the PDF file.
+            pdf (str): The PDF file.
             embedder_dir (str): The directory path where the embedding model is located.
         """
-        self.pdf_path = pdf_path
+        self.pdf = pdf
         self.embedder_dir = embedder_dir
 
     def _load_pdf(self, pattern: Pattern[str] = r"(?<=[.!?])\s+") -> List[Sentence]:
@@ -32,9 +32,9 @@ class PrepareForSemanticChunking:
         Returns:
             List[Sentence]: A list of 'Sentence' objects.
         """
-        loader = PyPDFLoader(self.pdf_path)
-        pages = loader.load()
-        full_text = ("").join(page.page_content for page in pages)
+        reader = PyPDF2.PdfReader(self.pdf)
+
+        full_text = ("").join(page.extract_text() for page in reader.pages)
         full_text = full_text.replace("\n", " ")
         splited_sentences = re.split(pattern=pattern, string=full_text)
         sentences = [Sentence(sen) for sen in splited_sentences]

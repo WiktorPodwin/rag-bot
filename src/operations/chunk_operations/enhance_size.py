@@ -1,4 +1,4 @@
-from src.datatypes import CombinedSentences, Chunk
+from src.models import CombinedSentences, Chunk
 from src.utils import reset_chunk_index
 
 from typing import List, Tuple

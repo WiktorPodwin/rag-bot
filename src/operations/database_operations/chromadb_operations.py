@@ -1,9 +1,8 @@
 import chromadb
 import logging
-import uuid
 import hashlib
 
-from typing import List
+from typing import List, Tuple
 from chromadb.errors import InvalidArgumentError
 
 
@@ -27,16 +26,6 @@ class ChromaDBOperations:
         self.chroma_client = chromadb.HttpClient(host=host, port=port)
         self.collection = self.chroma_client.get_or_create_collection(name=collection)
 
-    def remove_collection(self) -> None:
-        """
-        Deletes the whole collection.
-        """
-        try:
-            self.chroma_client.delete_collection(self.collection_name)
-            logging.info(f'Successfully deleted collection: "{self.collection_name}"')
-        except InvalidArgumentError:
-            logging.warning(f'Collection "{self.collection_name}" does not exist')
-
     def _generate_chunk_id(self, chunk: str) -> str:
         """
         Generates an unique ID for a text chunk using a MD5 hash.
@@ -53,7 +42,7 @@ class ChromaDBOperations:
         self,
         embeddings: List[List[float]],
         chunks: List[str],
-        metadatas: List[dict] = None,
+        content_md5,
     ) -> None:
         """
         Adds already prepared chunks to ChromaDB.
@@ -61,9 +50,10 @@ class ChromaDBOperations:
         Args:
             embeddings (List[str]): A list of embeddings applied on chunks.
             chunks (List[str]): A list of extracted text chunks.
-            metadatas (List[dict]): A list of additional informations for each chunk.
+            content_md5 (str): The MD5 hash of the context ot the file to store in chunk metadata.
         """
         chunk_ids = [self._generate_chunk_id(chunk) for chunk in chunks]
+        metadatas = [{"content_md5": content_md5} for _ in chunks]
 
         self.collection.add(
             ids=chunk_ids,
@@ -92,6 +82,16 @@ class ChromaDBOperations:
 
         return results.get("documents", [])
 
+    def remove_collection(self) -> None:
+        """
+        Deletes the whole collection.
+        """
+        try:
+            self.chroma_client.delete_collection(self.collection_name)
+            logging.info(f'Successfully deleted collection: "{self.collection_name}"')
+        except InvalidArgumentError:
+            logging.warning(f'Collection "{self.collection_name}" does not exist')
+
     def remove_chunks(self, ids_to_delete: List[str] = None) -> None:
         """
         Deletes chunks from the collection
@@ -102,12 +102,49 @@ class ChromaDBOperations:
         """
         try:
             if ids_to_delete is None:
-                all_chunks = self.collection.get(include=["ids"])
+                all_chunks = self.collection.get(include=["metadatas"])
                 ids_to_delete = all_chunks.get("ids", [])
 
-            if ids_to_delete:
-                self.collection.delete(ids=ids_to_delete)
-                logging.info(f"Successfully removed {len(ids_to_delete)} chunks")
+            self.collection.delete(ids=ids_to_delete)
+            logging.info(f"Successfully removed {len(ids_to_delete)} chunks")
 
         except ValueError:
-            logging.warning(f'Collection "{self.collection_name}" is already empty')
+            logging.warning(
+                f'No chunk IDs found in collection "{self.collection_name}". Nothing to delete.'
+            )
+
+    def find_md5_to_delete(self, md5_to_keep: List[str]) -> Tuple[List[str], List[str]]:
+        """
+        Identifies outdated chunks in the collection by compairing their metadata's content_md5
+        against a provided list of hashes to retain.
+        Args:
+            md5_to_keep List[str]: A list of MD5 hashes to retain.
+
+        Returns:
+            Tuple[List[str], List[str]]:
+             - A list of chunk IDs to delete from the collection.
+             - A list of MD5 hashes to remove from the database.
+        """
+        all_chunks = self.collection.get(include=["metadatas"])
+
+        all_md5s = [
+            metadata.get("content_md5") for metadata in all_chunks.get("metadatas", [])
+        ]
+
+        ids_to_delete = [
+            all_chunks.get("ids")[i]
+            for i, content_md5 in enumerate(all_md5s)
+            if content_md5 not in md5_to_keep
+        ]
+
+        md5_to_delete = [
+            content_md5
+            for content_md5 in all_md5s
+            if content_md5 and content_md5 not in md5_to_keep
+        ]
+
+        if not ids_to_delete and not md5_to_delete:
+            logging.info("All chunks are up to date. No deletions needed.")
+        else:
+            logging.info(f"Found {len(ids_to_delete)} outdated chunks to delete.")
+        return ids_to_delete, md5_to_delete

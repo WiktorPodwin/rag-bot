@@ -10,7 +10,8 @@ services:
     env_file:
       - ./chromadb.env
     volumes:
-      - chroma_db:/chroma/my_db
+      # - chroma_db:/chroma/my_db
+      - ./chroma_db:/chroma/my_db
     restart: unless-stopped
 
   postgresql:
@@ -31,5 +32,5 @@ services:
     restart: unless-stopped
 
 volumes:
-  chroma_db:
+  # chroma_db:
   pg_data:

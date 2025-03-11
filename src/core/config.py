@@ -3,6 +3,10 @@ from pydantic import computed_field
 
 
 class Settings(BaseSettings):
+    """
+    Manages application settings, loading configurations from environment variables.
+    """
+
     model_config = SettingsConfigDict(
         env_file=".env", env_ignore_empty=True, extra="ignore"
     )
