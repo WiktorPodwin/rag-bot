@@ -1,6 +1,6 @@
 from azure.storage.blob import BlobServiceClient, ContainerClient
 
-from src.core.config import settings
+from app.core.config import settings
 
 
 def init_blob_container() -> ContainerClient:

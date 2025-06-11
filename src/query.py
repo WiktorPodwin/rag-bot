@@ -1,7 +1,7 @@
 import time
 
-from src.config import BaseConfig as config
-from src.pipelines import retrieve_relevant_chunks
+from config import BaseConfig as config
+from pipelines import retrieve_relevant_chunks
 
 
 if __name__ == "__main__":

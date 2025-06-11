@@ -1,24 +1,27 @@
-version: '3.8'
-
 services:
   chromadb:
-    build:
-      context: .
+    image: chromadb/chroma:1.0.8.dev17
+    networks:
+      - default
     container_name: chromadb-ragbot
     ports:
       - 8800:8000
     env_file:
       - ./chromadb.env
     volumes:
-      # - chroma_db:/chroma/my_db
       - ./chroma_db:/chroma/my_db
     restart: unless-stopped
 
   postgresql:
-    build:
-      context: .
-      dockerfile: Dockerfile.pg
+    image: postgres:17
+    networks:
+      - default
     container_name: pg-ragbot
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-h", "localhost", "-U", "${POSTGRES_USER?Variable not set}" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     env_file:
       - .env
     environment:
@@ -31,6 +34,24 @@ services:
       - pg_data:/var/lib/postgresql/data
     restart: unless-stopped
 
+  ragbot:
+    container_name: ragbot
+    build:
+      context: .
+      dockerfile: Dockerfile
+    networks:
+      - default
+    depends_on:
+      postgresql:
+        condition: service_healthy
+        restart: true
+    env_file:
+      - .env
+    volumes:
+      - ./:/main
+    ports:
+      - 5000:5000
+    restart: no
+
 volumes:
-  # chroma_db:
   pg_data:

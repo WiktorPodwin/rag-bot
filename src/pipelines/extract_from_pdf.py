@@ -4,7 +4,7 @@ from src.operations.database_operations import (
     DBOperations,
 )
 from src.operations import recursive_semantic_chunking
-from src.core import get_session
+from src.app.core import get_session
 
 from typing import Any
 
