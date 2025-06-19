@@ -1,7 +1,7 @@
 import time
 
-from pipelines import handle_pdfs
-from config import BaseConfig as config
+from src.pipelines import handle_pdfs
+from src.config import BaseConfig as config
 
 
 if __name__ == "__main__":

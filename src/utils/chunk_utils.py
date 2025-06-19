@@ -1,4 +1,4 @@
-from src.models import CombinedSentences, Chunk
+from src.app.models import CombinedSentences, Chunk
 
 from typing import List, Tuple
 

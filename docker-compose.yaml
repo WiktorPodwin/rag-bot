@@ -1,6 +1,6 @@
 services:
   chromadb:
-    image: chromadb/chroma:1.0.8.dev17
+    image: ghcr.io/chroma-core/chroma:0.6.3
     networks:
       - default
     container_name: chromadb-ragbot
@@ -25,6 +25,7 @@ services:
     env_file:
       - .env
     environment:
+      - POSTGRES_HOST=${POSTGRES_HOST?Variable not set}
       - POSTGRES_USER=${POSTGRES_USER?Variable not set}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD?Variable not set}
       - POSTGRES_DB=${POSTGRES_DB?Variable not set}
@@ -34,24 +35,48 @@ services:
       - pg_data:/var/lib/postgresql/data
     restart: unless-stopped
 
-  ragbot:
-    container_name: ragbot
+  prestart:
+    container_name: prestart
+    env_file:
+      - .env
     build:
       context: .
-      dockerfile: Dockerfile
     networks:
       - default
     depends_on:
       postgresql:
         condition: service_healthy
         restart: true
+    command: bash scripts/prestart.sh
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER?}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD?Variable not set}
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_PORT=${POSTGRES_PORT}
+    volumes:
+      - ./:/main
+
+  ragbot:
+    container_name: ragbot
     env_file:
       - .env
+    build:
+      context: .
+    networks:
+      - default
+    depends_on:
+      postgresql:
+        condition: service_healthy
+        restart: true
+      prestart:
+        condition: service_completed_successfully
     volumes:
       - ./:/main
     ports:
-      - 5000:5000
-    restart: no
+      - 8000:8000
+    command: ["bash", "-c", "tail -f /dev/null"]
+
+
 
 volumes:
   pg_data:

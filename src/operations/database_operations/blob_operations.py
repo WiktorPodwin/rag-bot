@@ -1,4 +1,4 @@
-from src.core import init_blob_container
+from src.app.core import init_blob_container
 
 from azure.storage.blob import BlobProperties
 

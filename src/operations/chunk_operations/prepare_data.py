@@ -1,7 +1,7 @@
 import re
 from re import Pattern
 
-from src.models import Sentence, CombinedSentences
+from src.app.models import Sentence, CombinedSentences
 
 from typing import List
 from sentence_transformers import SentenceTransformer
@@ -91,7 +91,7 @@ class PrepareForSemanticChunking:
 
         Returns:
             List[CombinedSentences]: A list of 'CombinedSentences' objects with
-                embeddings applied to each combined sentence.
+                embeddings src.applied to each combined sentence.
         """
         embedder = SentenceTransformer(self.embedder_dir)
 

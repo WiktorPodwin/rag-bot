@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 
 from typing import List
 
-from src.models import CombinedSentences
+from src.app.models import CombinedSentences
 
 
 def visualize_chunks(

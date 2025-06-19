@@ -25,9 +25,7 @@ def retrieve_relevant_chunks(embedder_dir: str, query: str, top_k: int = 1) -> s
     )
 
     relevant_chunks = [item for sublist in relevant_chunks for item in sublist]
-    relevant_chunks = "\n\n".join(
-        [chunk.replace("\n", " ") for chunk in relevant_chunks]
-    )
+    relevant_chunks = " ".join([chunk.replace("\n", " ") for chunk in relevant_chunks])
     return relevant_chunks
 
 
@@ -48,17 +46,15 @@ def get_response(query: str, context: str, transformer_dir: str, **kwargs) -> st
 
     input_text = f"""
     You are a helpful AI assistant. Answer the question strictly based on the provided context.
-    If the answer is not in the context, say "I don't know."
+    If the answer is not in the context, say "I didn't find relevant information in the database."
 
     Context:
     {context}
 
-    Question:
-    {query}
+    Question: {query}
+    Answer:"""
+    inputs = tokenizer(input_text, return_tensors="pt")
+    # inputs.pop("token_type_ids", None)
 
-    Answer:
-    """
-    input_ids = tokenizer(input_text, return_tensors="pt")
-
-    outputs = transformer.generate(**input_ids, **kwargs)
+    outputs = transformer.generate(**inputs, **kwargs)
     return tokenizer.decode(outputs[0], skip_special_tokens=True)

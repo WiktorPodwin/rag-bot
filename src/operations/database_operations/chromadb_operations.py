@@ -48,7 +48,7 @@ class ChromaDBOperations:
         Adds already prepared chunks to ChromaDB.
 
         Args:
-            embeddings (List[str]): A list of embeddings applied on chunks.
+            embeddings (List[str]): A list of embeddings src.applied on chunks.
             chunks (List[str]): A list of extracted text chunks.
             content_md5 (str): The MD5 hash of the context ot the file to store in chunk metadata.
         """

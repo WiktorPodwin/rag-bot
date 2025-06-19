@@ -1,6 +1,6 @@
 import logging
 
-from app.core import init_db
+from src.app.core import init_db
 
 
 logging.basicConfig(level=logging.INFO)

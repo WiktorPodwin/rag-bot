@@ -1,16 +1,15 @@
 FROM python:3.12
 
+ENV PYTHONUNBUFFERED=1
+
 WORKDIR /main
 
 COPY requirements.txt /main/requirements.txt
 RUN pip install --no-cache-dir -r /main/requirements.txt
 
-# ENV PYTHONPATH=/main/src
+COPY src/ /main/src/
+COPY scripts/ /main/scripts/
 
-COPY .src/ /main/src/
+ENV PYTHONPATH=/main
 
-COPY .scripts/ /main/scripts/
-
-RUN chmod +x /main/src/app/scripts/prestart.sh
-
-RUN /main/src/app/scripts/prestart.sh
+CMD ["-c", "bash", "/main/scripts/prestart.sh"]

@@ -16,5 +16,7 @@ class BaseConfig:
     PDF_DIR = os.path.join(DATA_DIR, "pdfs")
 
     CHECKPOINTS = os.path.join(BASE_DIR, "checkpoints")
-    EMBEDDER_DIR = os.path.join(CHECKPOINTS, "BAAI/bge-small-en")
+
     TRANSFORMER_DIR = os.path.join(CHECKPOINTS, "google/gemma-2b")
+    EMBEDDER_DIR = os.path.join(CHECKPOINTS, "BAAI/bge-small-en")
+    # TRANSFORMER_DIR = os.path.join(CHECKPOINTS, "tiiuae/Falcon-E-1B-Instruct")

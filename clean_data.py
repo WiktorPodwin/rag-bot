@@ -1,5 +1,5 @@
-from operations.database_operations import ChromaDBOperations, DBOperations
-from app.core import get_session
+from src.operations.database_operations import ChromaDBOperations, DBOperations
+from src.app.core import get_session
 
 
 if __name__ == "__main__":
