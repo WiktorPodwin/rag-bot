@@ -6,8 +6,10 @@ services:
     container_name: chromadb-ragbot
     ports:
       - 8800:8000
-    env_file:
-      - ./chromadb.env
+    environment:
+      - ANONYMIZED_TELEMETRY=false
+      - IS_PERSISTENT=true
+      - PERSIST_DIRECTORY=/chroma/my_db
     volumes:
       - ./chroma_db:/chroma/my_db
     restart: unless-stopped
