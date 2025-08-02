@@ -1,13 +1,18 @@
-from re import Pattern
-from typing import List, Tuple
+from src.upload_pdfs.data_extraction.text.chunking.utils import (
+    extract_chunks,
+    visualize_chunks,
+)
 
-from src.utils import extract_chunks, sentence_embedding
-from src.operations.chunk_operations import (
+from src.upload_pdfs.data_extraction.text.chunking import (
     PrepareForSemanticChunking,
     ReduceChunkSize,
     EnhanceChunkSize,
-    visualize_chunks,
 )
+
+from src.upload_pdfs.data_extraction.text.utils import sentence_embedding
+
+from typing import List, Tuple
+from re import Pattern
 
 
 def recursive_semantic_chunking(
@@ -18,6 +23,7 @@ def recursive_semantic_chunking(
     percentage: int = 98,
     max_size: int = 1000,
     min_size: int = 300,
+    save_path: str | None = "data/graphs/chunks.png",
 ) -> Tuple[List[str], List[List[float]]]:
     """
     Performs recursive semantic chunking on a PDF document.
@@ -40,6 +46,8 @@ def recursive_semantic_chunking(
         percentage (int): The percentile used for chunk size reduction.
         max_size (int): The maximum allowable size for a chunk.
         min_size (int): The minimum allowable size for a chunk.
+        save_path (str | None): Path for the visualization of the chunking process.
+            If is None, visualization will not be saved.
 
     Returns:
         Tuple[List[str], List[List[float]]]: A list of extracted text chunks and
@@ -62,9 +70,8 @@ def recursive_semantic_chunking(
         combined_sentences=combined_sentences, chunks=chunks, min_size=min_size
     )
 
-    visualize_chunks(
-        combined_sentences=combined_sentences, save_path="data/graphs/chunks.png"
-    )
+    if save_path:
+        visualize_chunks(combined_sentences=combined_sentences, save_path=save_path)
 
     extracted_chunks = extract_chunks(combined_sentences=combined_sentences)
     embeddings = sentence_embedding(

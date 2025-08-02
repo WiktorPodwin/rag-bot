@@ -1,5 +1,5 @@
+from src.upload_pdfs.data_extraction.text.chunking.utils import reset_chunk_index
 from src.app.models import CombinedSentences, Chunk
-from src.utils import reset_chunk_index
 
 from typing import List, Tuple
 

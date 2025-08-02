@@ -1,9 +1,9 @@
-from src.operations.database_operations import (
+from src.operations.storages import (
     ChromaDBOperations,
     BlobStorageOperations,
     DBOperations,
 )
-from src.operations import recursive_semantic_chunking
+from src.upload_pdfs.data_extraction.text import recursive_semantic_chunking
 from src.app.core import get_session
 
 from typing import Any

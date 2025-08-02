@@ -17,8 +17,4 @@ def get_session():
     """
     Creates and returns a new database session.
     """
-    print(settings.POSTGRES_USER)
-    print(settings.POSTGRES_DB)
-    print(settings.POSTGRES_PASSWORD)
-    print(settings.POSTGRES_HOST)
     return Session(engine)

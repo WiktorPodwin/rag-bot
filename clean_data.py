@@ -1,4 +1,4 @@
-from src.operations.database_operations import ChromaDBOperations, DBOperations
+from src.operations.storages import ChromaDBOperations, DBOperations
 from src.app.core import get_session
 
 

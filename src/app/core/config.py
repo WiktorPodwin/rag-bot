@@ -32,4 +32,6 @@ class Settings(BaseSettings):
         return f"DefaultEndpointsProtocol=https;AccountName={self.ACCOUNT_NAME};AccountKey={self.ACCOUNT_KEY};EndpointSuffix=core.windows.net"
 
 
+Settings.model_rebuild()
+
 settings = Settings()

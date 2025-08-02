@@ -1,12 +1,11 @@
-import re
-from re import Pattern
-
 from src.app.models import Sentence, CombinedSentences
-
-from typing import List
-from sentence_transformers import SentenceTransformer
 from sklearn.metrics.pairwise import cosine_distances
+
+from sentence_transformers import SentenceTransformer
+from typing import List
+
 import PyPDF2
+import re
 
 
 class PrepareForSemanticChunking:
@@ -21,13 +20,13 @@ class PrepareForSemanticChunking:
         self.pdf = pdf
         self.embedder_dir = embedder_dir
 
-    def _load_pdf(self, pattern: Pattern[str] = r"(?<=[.!?])\s+") -> List[Sentence]:
+    def _load_pdf(self, pattern: re.Pattern[str] = r"(?<=[.!?])\s+") -> List[Sentence]:
         """
         Loads a PDF from the specified path, splits its textinto sentences based on punctation
         marks and converts them into 'Sentence' objects.
 
         Args:
-            pattern (Pattern[str]): A regex pattern to split sentences.
+            pattern (re.Pattern[str]): A regex pattern to split sentences.
 
         Returns:
             List[Sentence]: A list of 'Sentence' objects.
@@ -127,7 +126,7 @@ class PrepareForSemanticChunking:
         return combined_sentences
 
     def prepare_for_recursive_semantic_chunking(
-        self, pattern: Pattern[str] = r"(?<=[.!?])\s+", overlap: int = 1
+        self, pattern: re.Pattern[str] = r"(?<=[.!?])\s+", overlap: int = 1
     ) -> List[CombinedSentences]:
         """
         Prepares the document for recursive semantic chunking by:
@@ -137,7 +136,7 @@ class PrepareForSemanticChunking:
         4. Calculating cosine distances between embedding vectors.
 
         Args:
-            pattern (Pattern[str]): A regex pattern to split sentences.
+            pattern (re.Pattern[str]): A regex pattern to split sentences.
             overlap (int): The number of overlapping sentences to consider.
 
         Returns:

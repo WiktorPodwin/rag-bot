@@ -1,9 +1,17 @@
+from langchain_core.vectorstores.base import VectorStoreRetriever
+
+from chromadb.errors import InvalidArgumentError
+
+# from langchain_community.embeddings import HuggingFaceEmbeddings
+# from langchain_community.vectorstores import Chroma
+
+from langchain_huggingface.embeddings import HuggingFaceEmbeddings
+from langchain_chroma.vectorstores import Chroma
+from typing import List, Tuple, Dict
+
 import chromadb
 import logging
 import hashlib
-
-from typing import List, Tuple
-from chromadb.errors import InvalidArgumentError
 
 
 class ChromaDBOperations:
@@ -13,30 +21,63 @@ class ChromaDBOperations:
         host: str = "localhost",
         port: int = 8800,
         collection: str = "documents",
+        embedder_dir: str = "BAAI/bge-small-en",
     ) -> None:
         """
-        Initiate parameters
-
         Args:
-            host (str): Type of host
-            port (int): Port number
-            collection (str): Name of the collection to store documents inside ChromaDB
+            host (str): A host IP Address
+            port (int): A port number.
+            collection (str): Name of the collection to store documents inside ChromaDB.
+            embedder_name (str): The directory path where the embedding model is located.
         """
         self.collection_name = collection
         self.chroma_client = chromadb.HttpClient(host=host, port=port)
         self.collection = self.chroma_client.get_or_create_collection(name=collection)
 
-    def _generate_chunk_id(self, chunk: str) -> str:
+        self.embedder = HuggingFaceEmbeddings(model_name=embedder_dir)
+
+    def get_retriever(self, k: int = 1) -> VectorStoreRetriever:
         """
-        Generates an unique ID for a text chunk using a MD5 hash.
+        Returns a retriever instance from the existing Chroma vectorstore.
 
         Args:
-            chunk (str): The text chunk to hash.
+            k (int): The number of top chunks to retrieve.
 
         Returns:
-            str: The hexadecimal MD5 hash of the chunk.
+            VectorStoreRetriever: A retriever instance from the existing Chroma vectorstore.
         """
-        return hashlib.md5(chunk.encode()).hexdigest()
+        return Chroma(
+            client=self.chroma_client,
+            collection_name=self.collection_name,
+            embedding_function=self.embedder,
+        ).as_retriever(search_kwargs={"k": k})
+
+    def get_all_documents(self) -> List[Dict]:
+        """
+        Returns a list of all documents in the collection.
+
+        Returns:
+            List[Dict]: A list of dictionaries, each representing a document with keys like 'id', 'documents','metadatas' and 'embeddings'.
+        """
+        results = self.collection.get(include=["documents", "metadatas", "embeddings"])
+
+        documents = []
+        for i in range(len(results["ids"])):
+            documents.append(
+                {
+                    "id": results["ids"][i],
+                    "document": (
+                        results["documents"][i] if "documents" in results else None
+                    ),
+                    "metedata": (
+                        results["metadatas"][i] if "metadatas" in results else None
+                    ),
+                    "embedding": (
+                        results["embeddings"][i] if "embeddings" in results else None
+                    ),
+                }
+            )
+        return documents
 
     def add_chunks(
         self,
@@ -48,11 +89,24 @@ class ChromaDBOperations:
         Adds already prepared chunks to ChromaDB.
 
         Args:
-            embeddings (List[str]): A list of embeddings src.applied on chunks.
+            embeddings (List[str]): A list of embeddings applied on chunks.
             chunks (List[str]): A list of extracted text chunks.
             content_md5 (str): The MD5 hash of the context ot the file to store in chunk metadata.
         """
-        chunk_ids = [self._generate_chunk_id(chunk) for chunk in chunks]
+
+        def _generate_chunk_id(chunk: str) -> str:
+            """
+            Generates an unique ID for a text chunk using a MD5 hash.
+
+            Args:
+                chunk (str): The text chunk to hash.
+
+            Returns:
+                str: The hexadecimal MD5 hash of the chunk.
+            """
+            return hashlib.md5(chunk.encode()).hexdigest()
+
+        chunk_ids = [_generate_chunk_id(chunk) for chunk in chunks]
         metadatas = [{"content_md5": content_md5} for _ in chunks]
 
         self.collection.add(
@@ -62,25 +116,6 @@ class ChromaDBOperations:
             metadatas=metadatas,
         )
         logging.info("Successfully added chunks to the database.")
-
-    def retrieve_chunk(
-        self, embedded_query: List[float], top_k: int = 1
-    ) -> List[str | None]:
-        """
-        Retrieves the top-k most relevant chunks from ChromaDB based on the query.
-
-        Args:
-            embedded_query (List[float]): Query after ebedding.
-            top_k (int): The number of top chunks to retrieve.
-
-        Returns:
-            List[str | None]: A list of strings representing the top-k relevant chunks of text.
-        """
-        results = self.collection.query(
-            query_embeddings=[embedded_query], n_results=top_k
-        )
-
-        return results.get("documents", [])
 
     def remove_collection(self) -> None:
         """

@@ -19,4 +19,4 @@ class BaseConfig:
 
     TRANSFORMER_DIR = os.path.join(CHECKPOINTS, "google/gemma-2b")
     EMBEDDER_DIR = os.path.join(CHECKPOINTS, "BAAI/bge-small-en")
-    # TRANSFORMER_DIR = os.path.join(CHECKPOINTS, "tiiuae/Falcon-E-1B-Instruct")
+    # TRANSFORMER_DIR = os.path.join(CHECKPOINTS, "google/gemma-2b-it")
