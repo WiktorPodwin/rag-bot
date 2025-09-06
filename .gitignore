@@ -1,6 +1,9 @@
 # Models
 checkpoints
 
+# Experiments
+main.ipynb
+
 # ChromaDB 
 chroma_db
 

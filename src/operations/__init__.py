@@ -1,1 +1,0 @@
-from .handle_chunks import recursive_semantic_chunking

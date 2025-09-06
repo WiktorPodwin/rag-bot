@@ -1,27 +1,33 @@
-version: '3.8'
-
 services:
   chromadb:
-    build:
-      context: .
+    image: ghcr.io/chroma-core/chroma:1.0.15
+    networks:
+      - default
     container_name: chromadb-ragbot
     ports:
       - 8800:8000
-    env_file:
-      - ./chromadb.env
+    environment:
+      - ANONYMIZED_TELEMETRY=false
+      - IS_PERSISTENT=true
+      - PERSIST_DIRECTORY=/chroma/my_db
     volumes:
-      # - chroma_db:/chroma/my_db
       - ./chroma_db:/chroma/my_db
     restart: unless-stopped
 
   postgresql:
-    build:
-      context: .
-      dockerfile: Dockerfile.pg
+    image: postgres:17
+    networks:
+      - default
     container_name: pg-ragbot
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-h", "localhost", "-U", "${POSTGRES_USER?Variable not set}" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     env_file:
       - .env
     environment:
+      - POSTGRES_HOST=${POSTGRES_HOST?Variable not set}
       - POSTGRES_USER=${POSTGRES_USER?Variable not set}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD?Variable not set}
       - POSTGRES_DB=${POSTGRES_DB?Variable not set}
@@ -31,6 +37,48 @@ services:
       - pg_data:/var/lib/postgresql/data
     restart: unless-stopped
 
+# prestart:
+#   container_name: prestart
+#   env_file:
+#     - .env
+#   build:
+#     context: .
+#   networks:
+#     - default
+#   depends_on:
+#     postgresql:
+#       condition: service_healthy
+#       restart: true
+#   command: bash scripts/prestart.sh
+#   environment:
+#     - POSTGRES_USER=${POSTGRES_USER?}
+#     - POSTGRES_PASSWORD=${POSTGRES_PASSWORD?Variable not set}
+#     - POSTGRES_DB=${POSTGRES_DB}
+#     - POSTGRES_PORT=${POSTGRES_PORT}
+#   volumes:
+#     - ./:/main
+
+# ragbot:
+#   container_name: ragbot
+#   env_file:
+#     - .env
+#   build:
+#     context: .
+#   networks:
+#     - default
+#   depends_on:
+#     postgresql:
+#       condition: service_healthy
+#       restart: true
+#     prestart:
+#       condition: service_completed_successfully
+#   volumes:
+#     - ./:/main
+#   ports:
+#     - 8000:8000
+#   command: ["bash", "-c", "tail -f /dev/null"]
+
+
+
 volumes:
-  # chroma_db:
   pg_data:

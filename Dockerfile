@@ -1,7 +1,15 @@
-FROM ghcr.io/chroma-core/chroma:0.6.3
+FROM python:3.12
 
-RUN apt-get update && apt-get install -y \
-    iputils-ping \
-    net-tools \
-    curl \
-    && rm -rf /var/lib/apt/lists/*
+ENV PYTHONUNBUFFERED=1
+
+WORKDIR /main
+
+COPY requirements.txt /main/requirements.txt
+RUN pip install --no-cache-dir -r /main/requirements.txt
+
+COPY src/ /main/src/
+COPY scripts/ /main/scripts/
+
+ENV PYTHONPATH=/main
+
+CMD ["-c", "bash", "/main/scripts/prestart.sh"]
