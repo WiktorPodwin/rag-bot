@@ -1,9 +1,10 @@
-import numpy as np
-import matplotlib.pyplot as plt
+from src.app.models import CombinedSentences, Chunk
 
+from sentence_transformers import SentenceTransformer
 from typing import List, Tuple
 
-from src.app.models import CombinedSentences, Chunk
+import matplotlib.pyplot as plt
+import numpy as np
 
 
 def reset_chunk_index(
@@ -57,6 +58,9 @@ def extract_chunks(combined_sentences: List[CombinedSentences]) -> List[str]:
     extracted_chunks = []
     chunk = ""
     current_chunk = combined_sentences[0].chunk_index
+
+    if not current_chunk:
+        return [sen.combined_sentence for sen in combined_sentences]
 
     for i in range(len(combined_sentences)):
         if current_chunk != combined_sentences[i].chunk_index:
@@ -136,3 +140,23 @@ def visualize_chunks(
     plt.ylim(0, max_y * 1.15)
     plt.savefig(save_path)
     plt.close()
+
+
+def sentences_embedding(sentences: List[str], embedder_dir: str) -> List[List[float]]:
+    """
+    Generates embeddings for a list of strings using SentenceTransformer model.
+
+    Args:
+        sentences (List[str]): A list of strings to embed.
+        embedder_dir (str): The directory path where the embedding model is located.
+
+    Returns:
+        List[List[float]]: A list of embeddings, where each embedding is a list of floats.
+    """
+    embedder = SentenceTransformer(embedder_dir)
+    embeddings = []
+
+    for sentence in sentences:
+        embeddings.append(embedder.encode(sentence).tolist())
+
+    return embeddings

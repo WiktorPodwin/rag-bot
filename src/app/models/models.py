@@ -15,7 +15,7 @@ class FileMetadata(SQLModel, table=True):
     content_md5: str = Field(
         primary_key=True, title="MD5 Hash", unique=True, min_length=32, max_length=32
     )
-    name: str = Field(default="", title="File Name", max_length=255)
+    name: str = Field(title="File Name", unique=True, max_length=255)
     last_modified: datetime = Field(
         default_factory=lambda: datetime.now(timezone.utc),
         title="Last Modified Timestamp",

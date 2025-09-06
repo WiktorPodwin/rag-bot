@@ -4,52 +4,49 @@ from sklearn.metrics.pairwise import cosine_distances
 from sentence_transformers import SentenceTransformer
 from typing import List
 
-import PyPDF2
 import re
 
 
 class PrepareForSemanticChunking:
-    """Class to prepare the PDF file before semantic chunking"""
+    """
+    Class to prepare a text before semantic chunking
 
-    def __init__(self, pdf: str, embedder_dir: str) -> None:
+    Attrubutes:
+        pattern (re.Pattern[str]): A regex pattern to split sentences.
+        overlap (int): The number of overlapping sentences to consider.
+    """
+
+    def __init__(self, embedder_dir: str) -> None:
         """
         Args:
-            pdf (str): The PDF file.
             embedder_dir (str): The directory path where the embedding model is located.
-        """
-        self.pdf = pdf
-        self.embedder_dir = embedder_dir
 
-    def _load_pdf(self, pattern: re.Pattern[str] = r"(?<=[.!?])\s+") -> List[Sentence]:
         """
-        Loads a PDF from the specified path, splits its textinto sentences based on punctation
-        marks and converts them into 'Sentence' objects.
+        self.embedder_dir = embedder_dir
+        self.pattern: re.Pattern[str] = r"(?<=[.!?])\s+"
+        self.overlap: int = 1
+
+    def _preprocess_data(self, text: str) -> List[Sentence]:
+        """
+        Splits the text into sentences based on punctation marks and converts them into 'Sentence' objects.
 
         Args:
-            pattern (re.Pattern[str]): A regex pattern to split sentences.
+            text (str): Chunk of text already splitted by markdown splitter.
 
         Returns:
             List[Sentence]: A list of 'Sentence' objects.
         """
-        reader = PyPDF2.PdfReader(self.pdf)
-
-        full_text = ("").join(page.extract_text() for page in reader.pages)
-        full_text = full_text.replace("\n", " ")
-        splited_sentences = re.split(pattern=pattern, string=full_text)
+        text = text.replace("\n", " ")
+        splited_sentences = re.split(pattern=self.pattern, string=text)
         sentences = [Sentence(sen) for sen in splited_sentences]
-
         return sentences
 
-    def _connect_sentences(
-        self, sentences: List[Sentence], overlap: int = 1
-    ) -> List[CombinedSentences]:
+    def _connect_sentences(self, sentences: List[Sentence]) -> List[CombinedSentences]:
         """
         Connects sentences based on overlapping content.
 
         Args:
             sentences (List[Sentence]): A list of Sentence objects.
-            overlap (int): The number of overlapping sentences to consider.
-
         Returns:
             List[CombinedSentences]: A list of CombinedSentences objects.
         """
@@ -58,13 +55,13 @@ class PrepareForSemanticChunking:
         for i in range(len(sentences)):
             combined_sentence_text = ""
 
-            for j in range(i - overlap, i):
+            for j in range(i - self.overlap, i):
                 if j >= 0:
                     combined_sentence_text += f"{sentences[j].sentence} "
 
             combined_sentence_text += sentences[i].sentence
 
-            for j in range(i + 1, i + 1 + overlap):
+            for j in range(i + 1, i + 1 + self.overlap):
                 if j < len(sentences):
                     combined_sentence_text += f" {sentences[j].sentence}"
 
@@ -126,27 +123,31 @@ class PrepareForSemanticChunking:
         return combined_sentences
 
     def prepare_for_recursive_semantic_chunking(
-        self, pattern: re.Pattern[str] = r"(?<=[.!?])\s+", overlap: int = 1
+        self, text: str
     ) -> List[CombinedSentences]:
         """
         Prepares the document for recursive semantic chunking by:
-        1. Loading the PDF and splitting it into sentences.
+        1. Splitting the chunk of text into sentences.
         2. Connecting sentences with overlap.
         3. Applying embeddings.
         4. Calculating cosine distances between embedding vectors.
 
         Args:
-            pattern (re.Pattern[str]): A regex pattern to split sentences.
-            overlap (int): The number of overlapping sentences to consider.
+            text (str): Chunk of text already splitted by markdown splitter.
 
         Returns:
             List[CombinedSentences]: A list of 'CombinedSentences' objects with cosine distances
                 computed between each pair of consecutive sentences.
         """
-        sentences = self._load_pdf(pattern=pattern)
-        combined_sentences = self._connect_sentences(
-            sentences=sentences, overlap=overlap
-        )
+        sentences = self._preprocess_data(text=text)
+        if len(sentences) <= 3:
+            return [
+                CombinedSentences(
+                    combined_sentence=" ".join(sen.sentence for sen in sentences)
+                )
+            ]
+
+        combined_sentences = self._connect_sentences(sentences=sentences)
         combined_sentences = self._apply_embeddings(
             combined_sentences=combined_sentences
         )

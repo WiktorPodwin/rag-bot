@@ -1,6 +1,6 @@
 from src.app.models import FileMetadata
 
-from sqlmodel import Session, delete
+from sqlmodel import Session, delete, select
 from datetime import datetime
 
 import logging
@@ -52,18 +52,29 @@ class DBOperations:
         self.session.refresh(file_metadata)
         return file_metadata
 
-    def get_file_metadata(self, content_md5: bytes) -> FileMetadata:
+    def get_file_metadata(
+        self, content_md5: str | None = None, name: str | None = None
+    ) -> FileMetadata | None:
         """
-        Retrieves file's metadata by its MD5 hash.
+        Retrieves file's metadata by its MD5 hash or name.
 
         Args:
-            content_md5: (str): The MD5 hash of the file content.
+            content_md5: (str | None): The MD5 hash of the file content.
+            name (str | None): The name of the file.
 
         Returns:
-            FileMetadata: The rtrieved FileMetadata object or None, if not found.
+            FileMetadata | None: The rtrieved FileMetadata object or None, if not found.
         """
-        file_metadata = self.session.get(FileMetadata, content_md5)
-        return file_metadata
+        if (not content_md5 and not name) or (content_md5 and name):
+            raise ValueError("Provide exactly one of MD5 hash or file name.")
+
+        if content_md5:
+            return self.session.get(FileMetadata, content_md5)
+
+        elif name:
+            return self.session.exec(
+                select(FileMetadata).where(FileMetadata.name == name)
+            ).first()
 
     def delete_file_metadata(self, content_md5: bytes) -> None:
         """

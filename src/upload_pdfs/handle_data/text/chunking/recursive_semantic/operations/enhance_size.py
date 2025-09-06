@@ -1,4 +1,6 @@
-from src.upload_pdfs.data_extraction.text.chunking.utils import reset_chunk_index
+from src.upload_pdfs.handle_data.text.chunking.recursive_semantic.operations.utils import (
+    reset_chunk_index,
+)
 
 from src.app.models import CombinedSentences, Chunk
 

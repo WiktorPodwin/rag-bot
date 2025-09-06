@@ -38,13 +38,13 @@ class CombinedSentences(Sentence):
         combined_sentence (str): The sentence combined with its neighbors.
         embeddings (List[float]): A list of float values representing sentence embeddings.
         cosine_distance (Optional[float]): The cosine distance with the next sentence.
-        is_above_percentile (bool): If the cosine distance is above the specified percentile threshold.
+        above_threshold (bool): If the cosine distance is in the specified percentile threshold.
     """
 
     combined_sentence: str = ""
     embeddings: List[float] = field(default_factory=list)
     cosine_distance: Optional[float] = None
-    is_above_percentile: bool = None
+    above_threshold: bool = None
 
     _id_counter: int = 0
 

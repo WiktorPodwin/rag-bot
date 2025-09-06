@@ -1,26 +1,43 @@
+from src.upload_pdfs.handle_data.text.chunking.markdown import MarkdownSplitter
+
+from src.upload_pdfs.handle_data.text.chunking.recursive_semantic import (
+    recursive_semantic_chunking,
+)
 from src.operations.storages import (
     ChromaDBOperations,
     BlobStorageOperations,
     DBOperations,
 )
-from src.upload_pdfs.data_extraction.text import recursive_semantic_chunking
+
+from src.upload_pdfs.handle_data import PreprocessPDF
 from src.app.core import get_session
 
-from typing import Any
+from src.config import base_config
+
+from io import BytesIO
 
 
-def _handle_pdf(pdf: str, content_md5: str, embedder_dir: str, **kwargs: Any) -> None:
+def _handle_pdf(pdf: BytesIO, content_md5: str, embedder_dir: str) -> None:
     """
     Performs recursive semantic chunking on a PDF document and adds embedded chunks to the database.
 
     Args:
-        pdf (str): The PDF file.
+        pdf (BytesIO): The PDF file stored in bytes.
         content_md5 (str): The MD5 hash of the context ot the file.
         embedder_dir (str): The directory path where the embedding model is located.
-        **kwargs (Any): Additional parameters for recursive semantic chunking.
     """
+    preprocess_pdf = PreprocessPDF(pdf=pdf)
+    markdown_text = preprocess_pdf.preprocess()
+
+    markdown_splitter = MarkdownSplitter(base_config.MIN_CHUNK_LENGTH)
+    chunks = markdown_splitter.apply_markdown_chunking(markdown_text=markdown_text)
+
     chunks, embeddings = recursive_semantic_chunking(
-        pdf=pdf, embedder_dir=embedder_dir, **kwargs
+        chunks_before_processing=chunks,
+        embedder_dir=embedder_dir,
+        percentage=base_config.PERCENTILE_THRESHOLD,
+        min_size=base_config.MIN_CHUNK_LENGTH,
+        max_size=base_config.MAX_CHUNK_LENGTH,
     )
 
     chroma_oper = ChromaDBOperations()
@@ -29,13 +46,9 @@ def _handle_pdf(pdf: str, content_md5: str, embedder_dir: str, **kwargs: Any) ->
     )
 
 
-def handle_pdfs(embedder_dir: str, **chunking_params: Any) -> None:
+def handle_pdfs() -> None:
     """
     Handles processing PDFs, performing semantic chunking and removing outdated chunks.
-
-    Args:
-        embedder_dir (str): The directory path where the embedding model is located.
-        **chunking_params (Any): Additional chunking parameters passed to '_handle_pdf'
     """
     blob_oper = BlobStorageOperations()
     blob_list = blob_oper.list_file_metadatas()
@@ -50,10 +63,7 @@ def handle_pdfs(embedder_dir: str, **chunking_params: Any) -> None:
         if not db_oper.get_file_metadata(content_md5):
             pdf = blob_oper.download_blob(blob.name)
             _handle_pdf(
-                pdf=pdf,
-                content_md5=content_md5,
-                embedder_dir=embedder_dir,
-                **chunking_params
+                pdf=pdf, content_md5=content_md5, embedder_dir=base_config.EMBEDDER_DIR
             )
 
             db_oper.create_file_metadata(

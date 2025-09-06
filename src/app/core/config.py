@@ -4,7 +4,7 @@ from pydantic import computed_field
 
 class Settings(BaseSettings):
     """
-    Manages src.application settings, loading configurations from environment variables.
+    Manages application settings, loading configurations from environment variables.
     """
 
     model_config = SettingsConfigDict(

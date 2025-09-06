@@ -1,12 +1,9 @@
 from langchain_core.vectorstores.base import VectorStoreRetriever
 
+from langchain_community.embeddings import HuggingFaceEmbeddings
+from langchain_community.vectorstores import Chroma
 from chromadb.errors import InvalidArgumentError
 
-# from langchain_community.embeddings import HuggingFaceEmbeddings
-# from langchain_community.vectorstores import Chroma
-
-from langchain_huggingface.embeddings import HuggingFaceEmbeddings
-from langchain_chroma.vectorstores import Chroma
 from typing import List, Tuple, Dict
 
 import chromadb

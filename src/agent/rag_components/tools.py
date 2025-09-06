@@ -1,13 +1,11 @@
 from src.operations.storages import ChromaDBOperations
 
-from src.config import BaseConfig as config
+from src.config import base_config
 from langchain_core.tools import tool
-
-from typing import List
 
 
 @tool(parse_docstring=True)
-def retriever(query: str) -> List[str]:
+def retriever(query: str) -> str:
     """
     Retrieves relevant informations from the database based on a user-provided query.
 
@@ -15,13 +13,13 @@ def retriever(query: str) -> List[str]:
         query (str): Natural language query string containing specific question related to the user's request.
 
     Returns:
-        List[str]: A list of relevant chunks of text retrieved from the database that match the query.
+        str: A text of relevant chunks retrieved from the database that match the query.
     """
     retriever = ChromaDBOperations(
-        collection="documents", embedder_dir=config.EMBEDDER_DIR
-    ).get_retriever()
+        collection="documents", embedder_dir=base_config.EMBEDDER_DIR
+    ).get_retriever(3)
     results = retriever.invoke(query)
-    return results
+    return "\n\n".join(res.page_content for res in results)
 
 
 tools = [retriever]
