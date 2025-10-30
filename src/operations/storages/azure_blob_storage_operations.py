@@ -1,4 +1,4 @@
-from src.app.core import init_blob_container
+from app.core import init_blob_container
 
 from azure.storage.blob import BlobProperties
 
@@ -78,8 +78,8 @@ class BlobStorageOperations:
         content_md5 = hashlib.md5(blob_content).hexdigest()
 
         if check_if_present_in_db:
-            from src.operations.storages import DBOperations
-            from src.app.connect_db import get_session
+            from operations.storages import DBOperations
+            from app.connect_db import get_session
 
             db_oper = DBOperations(get_session())
             present_file = db_oper.get_file_metadata(content_md5=content_md5)

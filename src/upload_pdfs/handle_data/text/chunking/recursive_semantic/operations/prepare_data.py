@@ -1,4 +1,4 @@
-from src.app.models import Sentence, CombinedSentences
+from app.models import Sentence, CombinedSentences
 from sklearn.metrics.pairwise import cosine_distances
 
 from sentence_transformers import SentenceTransformer

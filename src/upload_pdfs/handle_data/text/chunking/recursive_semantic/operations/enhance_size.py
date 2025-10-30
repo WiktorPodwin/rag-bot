@@ -1,8 +1,8 @@
-from src.upload_pdfs.handle_data.text.chunking.recursive_semantic.operations.utils import (
+from upload_pdfs.handle_data.text.chunking.recursive_semantic.operations.utils import (
     reset_chunk_index,
 )
 
-from src.app.models import CombinedSentences, Chunk
+from app.models import CombinedSentences, Chunk
 
 from typing import List, Tuple
 

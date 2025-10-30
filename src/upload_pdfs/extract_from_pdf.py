@@ -1,18 +1,18 @@
-from src.upload_pdfs.handle_data.text.chunking.markdown import MarkdownSplitter
+from upload_pdfs.handle_data.text.chunking.markdown import MarkdownSplitter
 
-from src.upload_pdfs.handle_data.text.chunking.recursive_semantic import (
+from upload_pdfs.handle_data.text.chunking.recursive_semantic import (
     recursive_semantic_chunking,
 )
-from src.operations.storages import (
+from operations.storages import (
     ChromaDBOperations,
     BlobStorageOperations,
     DBOperations,
 )
 
-from src.upload_pdfs.handle_data import PreprocessPDF
-from src.app.core import get_session
+from upload_pdfs.handle_data import PreprocessPDF
+from app.core import get_session
 
-from src.config import base_config
+from config import base_config
 
 from io import BytesIO
 

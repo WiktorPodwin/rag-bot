@@ -1,4 +1,4 @@
-from src.app.models import FileMetadata
+from app.models import FileMetadata
 
 from sqlmodel import Session, delete, select
 from datetime import datetime

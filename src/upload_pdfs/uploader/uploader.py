@@ -10,7 +10,7 @@ from docling_core.types.doc import DocItemLabel
 
 from docling.document_converter import DocumentConverter, PdfFormatOption
 from docling_core.types import DoclingDocument
-from src.config import base_config
+from config import base_config
 
 from docling_ocr_onnxtr import OnnxtrOcrOptions
 import logging

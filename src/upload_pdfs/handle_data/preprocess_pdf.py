@@ -1,8 +1,8 @@
-from src.upload_pdfs.handle_data.pictures import HandlePictures
-from src.upload_pdfs.handle_data.tables import HandleTables
+from upload_pdfs.handle_data.pictures import HandlePictures
+from upload_pdfs.handle_data.tables import HandleTables
 
-from src.upload_pdfs.utils import from_bytes_to_document_stream
-from src.upload_pdfs.uploader import PdfLoader
+from upload_pdfs.utils import from_bytes_to_document_stream
+from upload_pdfs.uploader import PdfLoader
 
 from io import BytesIO
 

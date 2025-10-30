@@ -1,10 +1,10 @@
-from src.upload_pdfs.handle_data.text.chunking.recursive_semantic.operations.utils import (
+from upload_pdfs.handle_data.text.chunking.recursive_semantic.operations.utils import (
     extract_chunks,
     sentences_embedding,
     visualize_chunks,
 )
 
-from src.upload_pdfs.handle_data.text.chunking.recursive_semantic.operations import (
+from upload_pdfs.handle_data.text.chunking.recursive_semantic.operations import (
     PrepareForSemanticChunking,
     ReduceChunkSize,
     EnhanceChunkSize,

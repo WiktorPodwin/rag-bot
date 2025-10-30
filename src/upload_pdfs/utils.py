@@ -1,4 +1,4 @@
-from src.agent.rag_components.llm import llm
+from agent.rag_components.llm import llm
 
 from docling_core.types.io import DocumentStream
 

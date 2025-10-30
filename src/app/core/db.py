@@ -1,4 +1,4 @@
-from src.app.core.config import settings
+from app.core.config import settings
 from sqlmodel import create_engine, Session
 
 engine = create_engine(settings.SQLALCHEMY_DATABASE_URI)

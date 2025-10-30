@@ -1,15 +1,17 @@
-from src.operations.storages import (
+from operations.storages import (
     ChromaDBOperations,
     DBOperations,
     BlobStorageOperations,
 )
-from src.app.core import get_session
-from src.agent.graphs import agent
+from app.core import get_session
+from agent.graphs import agent
 
-from src.upload_pdfs import handle_pdfs
+from upload_pdfs import handle_pdfs
 
 from fastapi import FastAPI, UploadFile
 from langserve import add_routes
+
+import uvicorn
 
 app = FastAPI(debug=True, version="1.0")
 
@@ -114,3 +116,7 @@ async def sync_data():
         "status": "success",
         "message": "All data has been synchronized successfully.",
     }
+
+
+if __name__ == "__main__":
+    uvicorn.run(app="serve:app", host="127.0.0.1", port=8000, reload=True)

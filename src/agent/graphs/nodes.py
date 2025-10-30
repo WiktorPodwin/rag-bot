@@ -1,5 +1,5 @@
-from src.agent.rag_components import llm, chat_prompt, tools, tools_map
-from src.agent.graphs.states import GraphState
+from agent.rag_components import llm, chat_prompt, tools, tools_map
+from agent.graphs.states import GraphState
 
 from langchain_core.messages import HumanMessage, BaseMessage
 

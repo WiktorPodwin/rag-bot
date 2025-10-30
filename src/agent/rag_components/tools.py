@@ -1,6 +1,6 @@
-from src.operations.storages import ChromaDBOperations
+from operations.storages import ChromaDBOperations
 
-from src.config import base_config
+from config import base_config
 from langchain_core.tools import tool
 
 

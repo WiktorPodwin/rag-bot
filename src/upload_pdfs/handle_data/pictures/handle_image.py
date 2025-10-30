@@ -1,4 +1,4 @@
-from src.upload_pdfs.utils import summarize_object
+from upload_pdfs.utils import summarize_object
 from docling_core.types.doc import PictureItem
 
 

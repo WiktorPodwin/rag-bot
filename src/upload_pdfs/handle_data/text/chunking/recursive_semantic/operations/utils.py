@@ -1,4 +1,4 @@
-from src.app.models import CombinedSentences, Chunk
+from app.models import CombinedSentences, Chunk
 
 from sentence_transformers import SentenceTransformer
 from typing import List, Tuple
