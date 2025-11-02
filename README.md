@@ -16,20 +16,50 @@ cd rag-bot
 ```
 
 
+## Install all dependencies
+Projects uses `uv` as a dependencies manager, to install this tool run (If you have already installed, skip this command):
+```bash
+pip install uv
+```
+
+To install all requierd packages run in your terminal
+```bash
+uv install
+```
+
+Now is the time for activating the virtual environment
+On Linux/macOS:
+```bash
+source .venv/bin/activate
+```
+
+On Windows (PowerShell):
+```bash
+.venv\Scripts\Activate.ps1
+```
+
 
 ## Configure Environment Variables
 Create a new .env file in the project root directory.
 
 You can use the `.env.template` file as a reference to see what variables are required and how to name them:
+
+On Linux/macOS:
 ```bash
 cp .env.template .env
 ```
+
+On Windows (PowerShell):
+```bash
+copy .env.template .env
+```
+
 Then, open `.env` and replace values marked with `< >` with your actual credentials or paths (from your cloud, database, etc.).
 
 
 
 ## Build and Start Docker Containers
-Run the following command to build the Docker images and start all containers in the background:
+Run the following command to build the Docker images and start all containers in the background (Docker app hast to be on before you run this command):
 ```bash
 docker compose up -d --build
 ```
@@ -47,7 +77,7 @@ bash scripts/prestart.sh
 ## Start the Application
 Launch the FastAPI application:
 ```bash
-python3 src/serve.py
+python src/serve.py
 ```
 
 
