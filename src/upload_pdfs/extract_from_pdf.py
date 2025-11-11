@@ -28,9 +28,11 @@ def _handle_pdf(pdf: BytesIO, content_md5: str, embedder_dir: str) -> None:
     """
     preprocess_pdf = PreprocessPDF(pdf=pdf)
     markdown_text = preprocess_pdf.preprocess()
+    print("\nPreprocessed PDF, text_size:", len(markdown_text))
 
     markdown_splitter = MarkdownSplitter(base_config.MIN_CHUNK_LENGTH)
     chunks = markdown_splitter.apply_markdown_chunking(markdown_text=markdown_text)
+    print("\nMarkdown splitted, num chunks:", len(chunks))
 
     chunks, embeddings = recursive_semantic_chunking(
         chunks_before_processing=chunks,
@@ -39,6 +41,7 @@ def _handle_pdf(pdf: BytesIO, content_md5: str, embedder_dir: str) -> None:
         min_size=base_config.MIN_CHUNK_LENGTH,
         max_size=base_config.MAX_CHUNK_LENGTH,
     )
+    print("\nRecursive-semantic splitted, num chunks:", len(chunks))
 
     chroma_oper = ChromaDBOperations()
     chroma_oper.add_chunks(

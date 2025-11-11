@@ -53,7 +53,6 @@ def recursive_semantic_chunking(
 
     final_chunks: List[str] = []
     final_embeddings: List[List[float]] = []
-
     for chunk in chunks_before_processing:
         combined_sentences = (
             prepare_for_chunking.prepare_for_recursive_semantic_chunking(text=chunk)
@@ -77,8 +76,7 @@ def recursive_semantic_chunking(
         embeddings = sentences_embedding(
             sentences=extracted_chunks, embedder_dir=embedder_dir
         )
-
-    final_chunks.extend(extracted_chunks)
-    final_embeddings.extend(embeddings)
+        final_chunks.extend(extracted_chunks)
+        final_embeddings.extend(embeddings)
 
     return final_chunks, final_embeddings

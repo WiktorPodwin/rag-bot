@@ -1,5 +1,4 @@
 from langgraph.graph.message import add_messages
-from operator import add
 
 from pydantic import BaseModel, Field
 from typing import Annotated, Sequence
@@ -24,10 +23,3 @@ class GraphState(GraphInputState, GraphOutputState):
 
 
 GraphState.model_rebuild()
-
-# class GraphState(GraphInputState):
-#     messages: Annotated[Sequence, add]
-
-
-# class GraphOutputState(BaseModel):
-#     messages: Annotated[Sequence, add]
