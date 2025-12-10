@@ -1,6 +1,9 @@
 # Tutorial: How to Launch the System Step by Step
 
 ## Prerequisites
+This project has been developed and tested on a Linux environment. Usage on Windows or macOS may require adjustments and some commands may not work exactly as described.
+
+
 Before starting, make sure the following are installed on your system:
 - **Docker**: ***https://docs.docker.com/desktop/setup/install/windows-install/***
 - **Python 3.10.12**: ***https://www.python.org/downloads/***
@@ -17,41 +20,35 @@ cd rag-bot
 
 
 ## Install all dependencies
-Projects uses `uv` as a dependencies manager, to install this tool run (If you have already installed, skip this command):
+Create virtual environment:
 ```bash
-pip install uv
+python3 -m venv .venv
 ```
 
-To install all requierd packages run in your terminal
-```bash
-uv install
-```
-
-Now is the time for activating the virtual environment
-On Linux/macOS:
+Now is the time for activating the virtual environment:
 ```bash
 source .venv/bin/activate
 ```
 
-On Windows (PowerShell):
+
+Projects uses `uv` as a dependencies manager, to install this tool run:
 ```bash
-.venv\Scripts\Activate.ps1
+pip install uv
 ```
+
+To install all required packages, execute:
+```bash
+uv sync
+```
+
 
 
 ## Configure Environment Variables
 Create a new .env file in the project root directory.
 
 You can use the `.env.template` file as a reference to see what variables are required and how to name them:
-
-On Linux/macOS:
 ```bash
 cp .env.template .env
-```
-
-On Windows (PowerShell):
-```bash
-copy .env.template .env
 ```
 
 Then, open `.env` and replace values marked with `< >` with your actual credentials or paths (from your cloud, database, etc.).
@@ -69,7 +66,14 @@ docker compose up -d --build
 ## Initialize Database Tables
 Once the containers are running, execute the initialization script to set up the database schema:
 ```bash
-bash scripts/prestart.sh
+bash ./scripts/prestart.sh 
+```
+
+
+## Download Model Weights
+To download and store the embedding model locally:
+```bash
+bash ./scripts/model_setup.sh
 ```
 
 

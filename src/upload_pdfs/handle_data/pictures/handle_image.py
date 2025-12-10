@@ -21,8 +21,8 @@ class HandlePictures:
                 "image_url": {"url": image_url},
             },
         ]
-        # return summarize_object(content)
-        return "Summary of some image"
+        return summarize_object(content)
+        # return "Summary of some image"
 
     def handle_picture_data(self, image: PictureItem) -> str:
         too_small = self._check_if_picture_not_too_small(

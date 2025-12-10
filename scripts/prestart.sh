@@ -1,8 +1,9 @@
-set -x
+#!/bin/bash
 set -e
 
-# Starts DB connection
-python src/app/connect_db.py
+# Add src/ to Python path
+export PYTHONPATH=$(pwd)/src
 
-# Initializes data in DB
+# Run scripts
+python src/app/connect_db.py
 python src/app/init_db.py

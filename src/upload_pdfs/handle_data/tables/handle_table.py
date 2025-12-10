@@ -23,8 +23,8 @@ class HandleTables:
             return df.to_markdown()
 
         message_content = f"Summarize the following table up to 8 sentences (can be shorter): {convert_to_markdown(df)}"
-        # return summarize_object(message_content)
-        return "summary of some table"
+        return summarize_object(message_content)
+        # return "summary of some table"
 
     def handle_tabular_data(self, table: TableItem) -> str:
         df = self._convert_to_df(table=table)
