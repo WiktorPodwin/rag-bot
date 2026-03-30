@@ -1,7 +1,6 @@
 from upload_pdfs.utils import summarize_object
 from docling_core.types.doc import TableItem
 
-from typing import List
 import pandas as pd
 import numpy as np
 

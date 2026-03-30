@@ -9,7 +9,7 @@ def init_db() -> None:
     Initializes the database and creates all tables defined by SQLModel.
     """
     from sqlmodel import SQLModel
-    from app.models import FileMetadata
+    import app.models  # noqa F401
 
     SQLModel.metadata.create_all(engine)
 

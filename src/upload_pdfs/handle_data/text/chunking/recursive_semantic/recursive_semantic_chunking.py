@@ -1,7 +1,6 @@
 from upload_pdfs.handle_data.text.chunking.recursive_semantic.operations.utils import (
     extract_chunks,
     sentences_embedding,
-    visualize_chunks,
 )
 
 from upload_pdfs.handle_data.text.chunking.recursive_semantic.operations import (
