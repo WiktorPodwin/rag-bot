@@ -1,18 +1,17 @@
 from upload_pdfs.handle_data.text.chunking.markdown import MarkdownSplitter
-
 from upload_pdfs.handle_data.text.chunking.recursive_semantic import (
     recursive_semantic_chunking,
 )
+
 from operations.storages import (
     ChromaDBOperations,
     BlobStorageOperations,
     DBOperations,
 )
-
 from upload_pdfs.handle_data import PreprocessPDF
 from app.core import get_session
 
-from config import base_config
+from config import base_settings
 
 from io import BytesIO
 
@@ -30,16 +29,16 @@ def _handle_pdf(pdf: BytesIO, content_md5: str, embedder_dir: str) -> None:
     markdown_text = preprocess_pdf.preprocess()
     print("\nPreprocessed PDF, text_size:", len(markdown_text))
 
-    markdown_splitter = MarkdownSplitter(base_config.MIN_CHUNK_LENGTH)
+    markdown_splitter = MarkdownSplitter(base_settings.rag.MIN_CHUNK_LENGTH)
     chunks = markdown_splitter.apply_markdown_chunking(markdown_text=markdown_text)
     print("\nMarkdown splitted, num chunks:", len(chunks))
 
     chunks, embeddings = recursive_semantic_chunking(
         chunks_before_processing=chunks,
         embedder_dir=embedder_dir,
-        percentage=base_config.PERCENTILE_THRESHOLD,
-        min_size=base_config.MIN_CHUNK_LENGTH,
-        max_size=base_config.MAX_CHUNK_LENGTH,
+        percentage=base_settings.rag.PERCENTILE_THRESHOLD,
+        min_size=base_settings.rag.MIN_CHUNK_LENGTH,
+        max_size=base_settings.rag.MAX_CHUNK_LENGTH,
     )
     print("\nRecursive-semantic splitted, num chunks:", len(chunks))
 
@@ -66,7 +65,9 @@ def handle_pdfs() -> None:
         if not db_oper.get_file_metadata(content_md5):
             pdf = blob_oper.download_blob(blob.name)
             _handle_pdf(
-                pdf=pdf, content_md5=content_md5, embedder_dir=base_config.EMBEDDER_DIR
+                pdf=pdf,
+                content_md5=content_md5,
+                embedder_dir=base_settings.app.EMBEDDER_DIR,
             )
 
             db_oper.create_file_metadata(

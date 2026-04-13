@@ -1,6 +1,6 @@
 from azure.storage.blob import BlobServiceClient, ContainerClient
 
-from app.core.config import settings
+from config import base_settings
 
 
 def init_blob_container() -> ContainerClient:
@@ -11,6 +11,8 @@ def init_blob_container() -> ContainerClient:
         ContainerClient: A client instance connected to the specified container.
     """
     blob_service_client = BlobServiceClient.from_connection_string(
-        conn_str=settings.AZURE_STORAGE_CONNECTION_STRING
+        conn_str=base_settings.azure.AZURE_STORAGE_CONNECTION_STRING.get_secret_value()
     )
-    return blob_service_client.get_container_client(container=settings.CONTAINER_NAME)
+    return blob_service_client.get_container_client(
+        container=base_settings.azure.CONTAINER_NAME
+    )

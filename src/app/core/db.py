@@ -1,7 +1,7 @@
-from app.core.config import settings
+from config import base_settings
 from sqlmodel import create_engine, Session
 
-engine = create_engine(settings.SQLALCHEMY_DATABASE_URI)
+engine = create_engine(base_settings.db.SQLALCHEMY_DATABASE_URI.get_secret_value())
 
 
 def init_db() -> None:

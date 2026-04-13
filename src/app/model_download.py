@@ -1,7 +1,9 @@
-from config import base_config
-from sentence_transformers import SentenceTransformer
-import logging
 import os
+import logging
+
+from config import base_settings
+
+from sentence_transformers import SentenceTransformer
 
 
 def ensure_dir(path: str) -> None:
@@ -10,7 +12,7 @@ def ensure_dir(path: str) -> None:
 
 
 def download_and_save_embedder() -> None:
-    embedder_dir = base_config.EMBEDDER_DIR
+    embedder_dir = base_settings.app.EMBEDDER_DIR
     ensure_dir(embedder_dir)
 
     model = SentenceTransformer("BAAI/bge-small-en")

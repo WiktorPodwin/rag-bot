@@ -1,6 +1,6 @@
 from operations.storages import ChromaDBOperations
+from config import base_settings
 
-from config import base_config
 from langchain_core.tools import tool
 
 
@@ -16,7 +16,7 @@ def retriever(query: str) -> str:
         str: A text of relevant chunks retrieved from the database that match the query.
     """
     retriever = ChromaDBOperations(
-        collection="documents", embedder_dir=base_config.EMBEDDER_DIR
+        collection="documents", embedder_dir=base_settings.app.EMBEDDER_DIR
     ).get_retriever(3)
     results = retriever.invoke(query)
     return "\n\n".join(res.page_content for res in results)

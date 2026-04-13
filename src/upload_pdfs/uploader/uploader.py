@@ -10,7 +10,7 @@ from docling_core.types.doc import DocItemLabel
 
 from docling.document_converter import DocumentConverter, PdfFormatOption
 from docling_core.types import DoclingDocument
-from config import base_config
+from config import base_settings
 
 from docling_ocr_onnxtr import OnnxtrOcrOptions
 import logging
@@ -20,8 +20,8 @@ class PdfLoader:
 
     def __init__(
         self,
-        number_of_threads: int = base_config.NUMBER_OF_THREADS,
-        image_resolution_scale: float = base_config.IMAGE_RESOLUTION_SCALE,
+        number_of_threads: int = base_settings.rag.NUMBER_OF_THREADS,
+        image_resolution_scale: float = base_settings.rag.IMAGE_RESOLUTION_SCALE,
     ) -> None:
         self.textual_labels = {
             DocItemLabel.TEXT,

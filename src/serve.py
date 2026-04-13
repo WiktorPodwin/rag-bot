@@ -1,20 +1,22 @@
+import uvicorn
+import logging
+
 from operations.storages import (
     ChromaDBOperations,
     DBOperations,
     BlobStorageOperations,
 )
+from upload_pdfs import handle_pdfs
 from app.core import get_session
 from agent.graphs import agent
-
-from upload_pdfs import handle_pdfs
 
 from fastapi import FastAPI, UploadFile
 from langserve import add_routes
 
-import uvicorn
+
+logging.basicConfig(level=logging.INFO)
 
 app = FastAPI(debug=True, version="1.0")
-
 add_routes(app, agent)
 
 

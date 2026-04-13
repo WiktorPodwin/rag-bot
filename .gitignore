@@ -3,6 +3,7 @@ checkpoints
 
 # Experiments
 main.ipynb
+src/explore.ipynb
 
 # ChromaDB 
 chroma_db
