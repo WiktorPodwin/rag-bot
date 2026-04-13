@@ -1,3 +1,6 @@
+import logging
+from config import base_settings
+
 from docling.datamodel.pipeline_options import (
     PdfPipelineOptions,
     AcceleratorDevice,
@@ -10,10 +13,10 @@ from docling_core.types.doc import DocItemLabel
 
 from docling.document_converter import DocumentConverter, PdfFormatOption
 from docling_core.types import DoclingDocument
-from config import base_settings
 
 from docling_ocr_onnxtr import OnnxtrOcrOptions
-import logging
+
+logger = logging.getLogger(__name__)
 
 
 class PdfLoader:
@@ -60,9 +63,7 @@ class PdfLoader:
         try:
             extracted_pdf = self.converter.convert(pdf)
         except Exception as e:
-            logging.error(
-                f"Error while loading the pdf: {pdf.name}. Error message: {e}"
-            )
+            logger.error(f"Error while loading the pdf: {pdf.name}. Error message: {e}")
             raise e
 
         return extracted_pdf.document

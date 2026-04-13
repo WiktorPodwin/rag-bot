@@ -10,6 +10,8 @@ import chromadb
 import logging
 import hashlib
 
+logger = logging.getLogger(__name__)
+
 
 class ChromaDBOperations:
 
@@ -112,7 +114,7 @@ class ChromaDBOperations:
             documents=chunks,
             metadatas=metadatas,
         )
-        logging.info("Successfully added chunks to the database.")
+        logger.info("Successfully added chunks to the database.")
 
     def remove_collection(self) -> None:
         """
@@ -120,9 +122,9 @@ class ChromaDBOperations:
         """
         try:
             self.chroma_client.delete_collection(self.collection_name)
-            logging.info(f'Successfully deleted collection: "{self.collection_name}"')
+            logger.info(f'Successfully deleted collection: "{self.collection_name}"')
         except InvalidArgumentError:
-            logging.warning(f'Collection "{self.collection_name}" does not exist')
+            logger.warning(f'Collection "{self.collection_name}" does not exist')
 
     def remove_chunks(self, ids_to_delete: List[str] = None) -> None:
         """
@@ -138,10 +140,10 @@ class ChromaDBOperations:
                 ids_to_delete = all_chunks.get("ids", [])
 
             self.collection.delete(ids=ids_to_delete)
-            logging.info(f"Successfully removed {len(ids_to_delete)} chunks")
+            logger.info(f"Successfully removed {len(ids_to_delete)} chunks")
 
         except ValueError:
-            logging.warning(
+            logger.warning(
                 f'No chunk IDs found in collection "{self.collection_name}". Nothing to delete.'
             )
 
@@ -176,7 +178,7 @@ class ChromaDBOperations:
         ]
 
         if not ids_to_delete and not md5_to_delete:
-            logging.info("All chunks are up to date. No deletions needed.")
+            logger.info("All chunks are up to date. No deletions needed.")
         else:
-            logging.info(f"Found {len(ids_to_delete)} outdated chunks to delete.")
+            logger.info(f"Found {len(ids_to_delete)} outdated chunks to delete.")
         return ids_to_delete, md5_to_delete

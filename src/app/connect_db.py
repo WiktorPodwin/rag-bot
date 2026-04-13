@@ -5,7 +5,11 @@ from tenacity import retry, after_log, before_log, stop_after_attempt, wait_fixe
 
 from app.core import get_session
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(
+    format="%(asctime)s | %(levelname)s | [%(filename)s:%(lineno)d] | %(message)s",
+    datefmt="%d-%m-%Y %H:%M:%S",
+    level=logging.INFO,
+)
 logger = logging.getLogger(__name__)
 
 max_tries = 2 * 60

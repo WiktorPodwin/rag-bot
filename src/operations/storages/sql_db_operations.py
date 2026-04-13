@@ -5,6 +5,8 @@ from datetime import datetime
 
 import logging
 
+logger = logging.getLogger(__name__)
+
 
 class DBOperations:
     """
@@ -27,7 +29,7 @@ class DBOperations:
         statement = delete(FileMetadata)
         self.session.exec(statement)
         self.session.commit()
-        logging.info("Cleared all rows from the FileMetadata table.")
+        logger.info("Cleared all rows from the FileMetadata table.")
 
     def create_file_metadata(
         self, name: str, content_md5: str, last_modified: datetime = None

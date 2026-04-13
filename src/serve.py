@@ -13,8 +13,12 @@ from agent.graphs import agent
 from fastapi import FastAPI, UploadFile
 from langserve import add_routes
 
-
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(
+    format="%(asctime)s | %(levelname)s | [%(filename)s:%(lineno)d] | %(message)s",
+    datefmt="%d-%m-%Y %H:%M:%S",
+    level=logging.INFO,
+    force=True,
+)
 
 app = FastAPI(debug=True, version="1.0")
 add_routes(app, agent)
